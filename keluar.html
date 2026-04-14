@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Uang Keluar</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(135deg, #DAF9DE, #F6FFDC);
+    padding: 20px;
+    margin: 0;
+    display: flex;
+    justify-content: center; 
+    align-items: flex-start;     
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+.box {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.item {
+    background: #eee;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+h2 {
+    text-align: center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Data Uang Keluar</h2>
+<a href="index1.html">⬅ kembali</a>
+
+<div id="list"></div>
+
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("kas")) || [];
+let list = document.getElementById("list");
+
+data.forEach((d) => {
+    if (d.jenis === "keluar") {
+        list.innerHTML += `
+        <div class="item" style="color:red;">
+            <div>
+                <b>${d.nama}</b><br>
+                ${d.tanggal} <br>
+                ${d.keterangan} - Rp ${new Intl.NumberFormat('id-ID').format(d.jumlah)}
+            </div>
+        </div>
+        `;
+    }
+});
+</script>
+
+</body>
+</html>

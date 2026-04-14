@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <title>Buku Tabungan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #DAF9DE, #F6FFDC);
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center; 
+            align-items: flex-start;     
+            min-height: 100vh;
+            overflow-y: auto;
+        }
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        input, select, button {
+            width: 100%;
+            margin: 8px 0;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background: linear-gradient(45deg, #4CAF50, #2ecc71);
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        button:hover {
+            transform: scale(1.03);
+            transition: 0.2s;
+        }
+        .tab {
+            display: flex;
+            gap: 10px;
+        }
+        .tab button {
+            width: auto;
+            flex: 1;
+            padding: 16px;
+        }
+        .item {
+            background: #eee;
+            margin-top: 8px;
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+        }
+        .item button {
+            width: auto;
+            margin-left: 10px;
+            padding: 3px 8px;
+        }
+        
+        .item .edit {
+            background: rgb(0, 255, 106);
+            color: white;
+        }
+
+        .item .hapus {
+            background: red;
+            color: white;
+        }
+        h3 {
+            margin-top: 20px;
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2 style="text-align: center;">Buku tabungan</h2>
+    
+    <form id="form">
+    <input type="text" id="nama" placeholder="Nama siswa" required>
+
+    <input type="date" id="tanggal" required>
+
+    <input type="text" id="keterangan" placeholder="keterangan" required>
+
+    <select id="jenis">
+        <option value="masuk">Masuk</option>
+        <option value="keluar">Keluar</option>
+    </select>
+
+    <input type="number" id="jumlah" placeholder="jumlah" required>
+
+    <button type="submit">Tambah</button>
+</form>
+
+    <h3>Saldo: Rp <span id="saldo">0</span></h3>
+    <p id="masuk">📈 Total Masuk: Rp 0</p>
+    <p id="keluar">📉 Total Keluar: Rp 0</p>
+
+    <div class="tab" style="display:flex; gap:5px;">
+
+    <button onclick="window.location.href='masuk.html'">
+        Masuk
+    </button>
+
+    <button onclick="window.location.href='keluar.html'">
+        Keluar
+    </button>
+
+</div>
+    <div id="list"></div>
+</div>
+
+<script>
+let data = JSON.parse(localStorage.getItem("kas")) || [];
+let filter = "semua";
+
+function setFilter(jenis) {
+    filter = jenis;
+    render();
+}
+
+function render() {
+    let list = document.getElementById("list");
+    let saldo = 0;
+    let totalMasuk = 0;   
+    let totalKeluar = 0; 
+
+    list.innerHTML = "";
+
+    data.forEach((d, i) => {
+
+        if (filter !== "semua" && d.jenis !== filter) return;
+
+        if (d.jenis === "masuk") {
+            saldo += Number(d.jumlah);
+            totalMasuk += Number(d.jumlah);
+        } else {
+            saldo -= Number(d.jumlah);
+            totalKeluar += Number(d.jumlah);
+        }
+
+       function render() {
+    let saldo = 0;
+    let totalMasuk = 0;
+    let totalKeluar = 0;
+
+    data.forEach((d) => {
+
+        let jumlah = Number(d.jumlah);
+
+        if (d.jenis === "masuk") {
+            saldo += jumlah;
+            totalMasuk += jumlah;
+        } else {
+            saldo -= jumlah;
+            totalKeluar += jumlah;
+        }
+    });
+
+    document.getElementById("saldo").innerText =
+        new Intl.NumberFormat('id-ID').format(saldo);
+
+    document.getElementById("masuk").innerText =
+        "📈 Total Masuk: Rp " + new Intl.NumberFormat('id-ID').format(totalMasuk);
+
+    document.getElementById("keluar").innerText =
+        "📉 Total Keluar: Rp " + new Intl.NumberFormat('id-ID').format(totalKeluar);
+}
+    });
+
+    document.getElementById("saldo").innerText = new Intl.NumberFormat('id-ID').format(saldo);
+    document.getElementById("saldo").style.color = saldo >= 0 ? "green" : "red";
+
+    document.getElementById("masuk").innerText = 
+        "📈 Total Masuk: Rp " + new Intl.NumberFormat('id-ID').format(totalMasuk);
+
+    document.getElementById("keluar").innerText = 
+        "📉 Total Keluar: Rp " + new Intl.NumberFormat('id-ID').format(totalKeluar);
+}
+
+document.getElementById("form").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    let transaksi = {
+    nama: document.getElementById("nama").value,
+    tanggal: document.getElementById("tanggal").value,
+    keterangan: document.getElementById("keterangan").value,
+    jenis: document.getElementById("jenis").value,
+    jumlah: document.getElementById("jumlah").value
+};
+
+    data.push(transaksi);
+    localStorage.setItem("kas", JSON.stringify(data));
+
+    this.reset();
+    document.getElementById("tanggal").valueAsDate = new Date(); 
+    render();
+});
+
+function edit(index) {
+    let d = data[index];
+
+    document.getElementById("nama").value = d.nama || ""; 
+    document.getElementById("kategori").value = d.kategori || "";
+    document.getElementById("tanggal").value = d.tanggal;
+    document.getElementById("keterangan").value = d.keterangan;
+    document.getElementById("jenis").value = d.jenis;
+    document.getElementById("jumlah").value = d.jumlah;
+
+    data.splice(index, 1);
+    localStorage.setItem("kas", JSON.stringify(data));
+    render();
+}
+
+function hapus(index) {
+    if (confirm("Yakin mau hapus?")) {
+        data.splice(index, 1);
+        localStorage.setItem("kas", JSON.stringify(data));
+        render();
+    }
+}
+
+render();
+document.getElementById("tanggal").valueAsDate = new Date();
+</script>
+
+</body>
+</html>
